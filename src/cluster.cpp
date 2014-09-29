@@ -131,14 +131,14 @@ CassError cass_cluster_set_max_simultaneous_requests_threshold(CassCluster* clus
 }
 
 CassError cass_cluster_set_connect_timeout(CassCluster* cluster,
-                                              unsigned timeout) {
-  cluster->config().set_connect_timeout(timeout);
+                                              unsigned timeout_ms) {
+  cluster->config().set_connect_timeout(timeout_ms);
   return CASS_OK;
 }
 
 CassError cass_cluster_set_request_timeout(CassCluster* cluster,
-                                        unsigned timeout) {
-  cluster->config().set_request_timeout(timeout);
+                                        unsigned timeout_ms) {
+  cluster->config().set_request_timeout(timeout_ms);
   return CASS_OK;
 }
 

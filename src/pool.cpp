@@ -245,7 +245,7 @@ bool Pool::wait_for_connection(RequestHandler* request_handler) {
     return false;
   }
 
-  request_handler->start_timer(loop_, config_.connect_timeout(), request_handler,
+  request_handler->start_timer(loop_, config_.connect_timeout_ms(), request_handler,
                                boost::bind(&Pool::on_pending_request_timeout, this, _1));
   pending_requests_.add_to_back(request_handler);
   return true;

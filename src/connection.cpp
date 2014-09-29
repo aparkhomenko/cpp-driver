@@ -145,7 +145,7 @@ Connection::Connection(uv_loop_t* loop, Logger* logger, const Config& config,
 void Connection::connect() {
   if (state_ == CONNECTION_STATE_NEW) {
     state_ = CONNECTION_STATE_CONNECTING;
-    connect_timer_ = Timer::start(loop_, config_.connect_timeout(), this,
+    connect_timer_ = Timer::start(loop_, config_.connect_timeout_ms(), this,
                                   on_connect_timeout);
     Connecter::connect(&socket_, address_, this, on_connect);
   }
@@ -176,7 +176,7 @@ bool Connection::execute(Handler* handler) {
   uv_stream_t* sock_stream = copy_cast<uv_tcp_t*, uv_stream_t*>(&socket_);
 
   handler->set_state(Handler::REQUEST_STATE_WRITING);
-  handler->start_timer(loop_, config_.request_timeout(), handler,
+  handler->start_timer(loop_, config_.request_timeout_ms(), handler,
                        boost::bind(&Connection::on_timeout, this, _1));
   handler->write(sock_stream, handler,
                  boost::bind(&Connection::on_write, this, _1));
