@@ -1,5 +1,7 @@
 cmake_minimum_required(VERSION 2.6.4)
 
+include(FindPackageHandleStandardArgs)
+
 set(PROJECT_NAME_STR cassandra)
 set(PROJECT_LIB_NAME ${PROJECT_NAME_STR})
 set(PROJECT_LIB_NAME_STATIC "${PROJECT_LIB_NAME}_static")
@@ -10,6 +12,7 @@ project(${PROJECT_NAME_STR} C CXX)
 option(CASS_INSTALL_HEADER "Install header file" ON)
 option(CASS_BUILD_STATIC "Build static library" ON)
 option(CASS_BUILD_EXAMPLES "Build examples" ON)
+option(CASS_USE_TCMALLOC "Use tcmalloc" OFF)
 
 #-------------------
 # Version
@@ -54,13 +57,26 @@ find_library(LIBUV_LIBRARY
 
 set(LIBUV_LIBRARIES ${LIBUV_LIBRARY})
 
-include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Libuv "Could NOT find libuv, try to set the path to the libuv root folder in the system variable LIBUV_ROOT_DIR"
   LIBUV_LIBRARIES
   LIBUV_INCLUDE_DIR)
 
 set(INCLUDES ${INCLUDES} ${LIBUV_INCLUDE_DIR})
 set(LIBS ${LIBS} ${LIBUV_LIBRARIES})
+
+# tcmalloc
+if(CASS_USE_TCMALLOC)
+  find_library(GPERFTOOLS_TCMALLOC
+      NAMES tcmalloc
+      HINTS ${Gperftools_ROOT_DIR}/lib)
+  
+  set(GPERFTOOLS_LIBRARIES ${GPERFTOOLS_TCMALLOC})
+  
+  find_package_handle_standard_args(Gperftools "Could NOT find gperftools, try to set the path to the gperftools root folder in the system variable Gperftools_ROOT_DIR"
+    GPERFTOOLS_LIBRARIES)
+  
+  set(LIBS ${LIBS} ${GPERFTOOLS_LIBRARIES})
+endif()
 
 # openssl
 if(WIN32)
